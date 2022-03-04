@@ -1,0 +1,15 @@
+[package]
+name = "rust-web"
+version = "0.0.1"
+edition = "2021"
+authors = ["zengjie <1063423131@qq.com>"]
+homepage = "https://github.com/JieZeng1993/rust-web"
+description = "learning web framework"
+license = "MIT"
+keywords = ["http", "web", "framework", "async"]
+categories = [
+    "network-programming",
+    "asynchronous",
+    "web-programming::http-server",
+    "web-programming::websocket",
+]
