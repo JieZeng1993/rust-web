@@ -1,7 +1,10 @@
 use std::io;
+use std::net::SocketAddr;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
+use hyper::http::uri::Scheme;
+use hyper::server::conn::Http;
 use tokio::io::{AsyncRead, AsyncWrite};
 use tokio::net::TcpListener as TokioTcpListener;
 use tokio::sync::Notify;
@@ -35,7 +38,7 @@ async fn main() -> io::Result<()> {
                     tokio::spawn( async move{
                         //线程数加1
                         alive_connections.fetch_add(1,Ordering::SeqCst);
-                        // serve_connection(tcp_stream, local_addr.clone(),    RemoteAddr(remote_addr.into()), Scheme::HTTP, ep).await;
+                        serve_connection(tcp_stream, local_addr.clone(),    remote_addr.clone(), Scheme::HTTP).await;
                         if alive_connections.fetch_sub(1, Ordering::SeqCst) == 1 {
                             //最后一个连接，唤醒主线程
                             notify.notify_one();
@@ -54,10 +57,21 @@ async fn main() -> io::Result<()> {
     Ok(())
 }
 
-// async fn serve_connection(
-//     socket: impl AsyncRead + AsyncWrite + Send + Unpin + 'static,
-//     local_addr: LocalAddr,
-//     remote_addr: RemoteAddr,
-//     scheme: Scheme,
-//     ep: Arc<dyn Endpoint<Output=Response>>,
-// ) {}
+async fn serve_connection(
+    socket: impl AsyncRead + AsyncWrite + Send + Unpin + 'static,
+    local_addr: SocketAddr,
+    remote_addr: SocketAddr,
+    scheme: Scheme,
+    // ep: Arc<dyn Endpoint<Output=Response>>,
+) {
+    let service = hyper::service::service_fn({
+
+    });
+
+
+    let conn = Http::new()
+        .serve_connection(socket, service)
+        .with_upgrades();
+
+    conn.await;
+}

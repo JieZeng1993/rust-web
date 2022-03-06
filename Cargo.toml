@@ -19,4 +19,4 @@ path = "src/web/mod.rs"
 [dependencies]
 # features "net" 已经被hyper引入
 tokio = { vesion = "*", features = ["macros", "rt-multi-thread", "sync"] }
-hyper = { version = "*", features = ["server", "runtime", "http2"] }
+hyper = { version = "*", features = ["server", "runtime", "http1", "http2"] }
