@@ -13,3 +13,8 @@ categories = [
     "web-programming::http-server",
     "web-programming::websocket",
 ]
+[[bin]]
+name = "server-test"
+path = "src/web/mod.rs"
+[dependencies]
+tokio = { vesion = "*", features = ["macros", "net", "rt-multi-thread", "sync"] }
