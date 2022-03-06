@@ -2,6 +2,7 @@ use std::io;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
+use tokio::io::{AsyncRead, AsyncWrite};
 use tokio::net::TcpListener as TokioTcpListener;
 use tokio::sync::Notify;
 
@@ -21,18 +22,20 @@ async fn main() -> io::Result<()> {
     let timeout_notify = Arc::new(Notify::new());
     //同步器
     let notify = Arc::new(Notify::new());
+    // let ep = Arc::new(ep.into_endpoint().map_to_response());
     loop {
         tokio::select! {
             res = listener.accept()=>{
                 println!("res: {:?}", res);
-                if let Ok((tcp_stream, socket_addr)) = res {
+                if let Ok((tcp_stream, remote_addr)) = res {
                     let alive_connections = alive_connections.clone();
                     let timeout_notify = timeout_notify.clone();
                     let notify = notify.clone();
+                    // let ep = ep.clone();
                     tokio::spawn( async move{
                         //线程数加1
                         alive_connections.fetch_add(1,Ordering::SeqCst);
-
+                        // serve_connection(tcp_stream, local_addr.clone(),    RemoteAddr(remote_addr.into()), Scheme::HTTP, ep).await;
                         if alive_connections.fetch_sub(1, Ordering::SeqCst) == 1 {
                             //最后一个连接，唤醒主线程
                             notify.notify_one();
@@ -48,5 +51,13 @@ async fn main() -> io::Result<()> {
         notify.notified().await;
     }
 
-    OK(())
+    Ok(())
 }
+
+// async fn serve_connection(
+//     socket: impl AsyncRead + AsyncWrite + Send + Unpin + 'static,
+//     local_addr: LocalAddr,
+//     remote_addr: RemoteAddr,
+//     scheme: Scheme,
+//     ep: Arc<dyn Endpoint<Output=Response>>,
+// ) {}

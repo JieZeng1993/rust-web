@@ -17,4 +17,6 @@ categories = [
 name = "server-test"
 path = "src/web/mod.rs"
 [dependencies]
-tokio = { vesion = "*", features = ["macros", "net", "rt-multi-thread", "sync"] }
+# features "net" 已经被hyper引入
+tokio = { vesion = "*", features = ["macros", "rt-multi-thread", "sync"] }
+hyper = { version = "*", features = ["server", "runtime", "http2"] }
